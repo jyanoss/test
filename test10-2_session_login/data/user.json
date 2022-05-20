@@ -14,5 +14,9 @@
 	"changeuser": {
 		"password": "changepass",
 		"name": "david"
-	}
+	},
+    "velopert": {
+        "password": "123123",
+        "name": "M.J. KIM"
+    }	
 }
