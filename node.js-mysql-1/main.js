@@ -23,7 +23,7 @@ var app = http.createServer(function(request,response){
       if(queryData.id === undefined){
         //리스트 보기
         db.query(`select * from topic`, function(error,topics){
-            var title = 'Welcome';
+            var title = 'List';
             var description = 'Hello, Node.js';
             var list = template.list(topics);
             var html = template.HTML(title, list,
