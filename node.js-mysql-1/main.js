@@ -53,19 +53,20 @@ var app = http.createServer(function(request,response){
           var list        = template.list(topics);
           var html        = template.HTML(title, list,
             `<h2>${title}</h2>${description}`,
-            `<a href="/create">create</a>
-             <a href="/update?id=${queryData.id}">update</a>
-             <form action="delete_prcess" method="post">
-              <input type="hidden" name="id" valued="${queryData.id}">
-              <input type="submit" value="delete">
-             </form>
-            `
+            ` <a href="/create">create</a>
+                <a href="/update?id=${queryData.id}">update</a>
+                <form action="delete_process" method="post">
+                  <input type="hidden" name="id" value="${queryData.id}">
+                  <input type="submit" value="delete">
+                </form>`
           );
           response.writeHead(200);
           response.end(html);
           })
         });       
       }
+
+
 
     } else if(pathname === '/create'){
       //글생성하기
@@ -164,22 +165,27 @@ var app = http.createServer(function(request,response){
       });
 
     } else if(pathname === '/delete_process'){
-      
+
       //글삭제
       var body = '';
       request.on('data', function(data){
           body = body + data;
       });
-      request.on('end', function(){
-          var post = qs.parse(body);
-          var id = post.id;
-          var filteredId = path.parse(id).base;
-          fs.unlink(`data/${filteredId}`, function(error){
-            response.writeHead(302, {Location: `/`});
-            response.end();
-          })
-      });
 
+      request.on('end', function(){
+        var post        = qs.parse(body);
+        console.log(post)
+        db.query(
+          'delete from topic WHERE id=?' , [post.id], function(error, result){
+          if (error){
+            throw error;
+          }            
+          response.writeHead(302, {Location: `/`});
+          response.end();
+          }
+        )
+
+      });
     } else {
       response.writeHead(404);
       response.end('Not found');
