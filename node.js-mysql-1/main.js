@@ -21,7 +21,7 @@ var app = http.createServer(function(request,response){
     var pathname = url.parse(_url, true).pathname;
     if(pathname === '/'){
       if(queryData.id === undefined){
- 
+        //리스트 보기
         db.query(`select * from topic`, function(error,topics){
             var title = 'Welcome';
             var description = 'Hello, Node.js';
@@ -36,30 +36,7 @@ var app = http.createServer(function(request,response){
 
 
       } else {
-/*
-        fs.readdir('./data', function(error, filelist){
-          var filteredId = path.parse(queryData.id).base;
-          fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-            var title = queryData.id;
-            var sanitizedTitle = sanitizeHtml(title);
-            var sanitizedDescription = sanitizeHtml(description, {
-              allowedTags:['h1']
-            });
-            var list = template.list(filelist);
-            var html = template.HTML(sanitizedTitle, list,
-              `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-              ` <a href="/create">create</a>
-                <a href="/update?id=${sanitizedTitle}">update</a>
-                <form action="delete_process" method="post">
-                  <input type="hidden" name="id" value="${sanitizedTitle}">
-                  <input type="submit" value="delete">
-                </form>`
-            );
-            response.writeHead(200);
-            response.end(html);
-          });
-        });
-*/
+        //상세보기
         db.query(`select * from topic`, function(error,topics){
           if (error){
             throw error;
@@ -69,23 +46,31 @@ var app = http.createServer(function(request,response){
               throw error2;
             }
 
-          var title = topic[0].title;
+          var title       = topic[0].title;
           var description = topic[0].description;
-          var list = template.list(topics);
-          var html = template.HTML(title, list,
+          var list        = template.list(topics);
+          var html        = template.HTML(title, list,
             `<h2>${title}</h2>${description}`,
-            `<a href="/create">create</a>`
+            `<a href="/create">create</a>
+             <a href="/update?id=${queryData.id}">update</a>
+             <form action="delete_prcess" method="post">
+              <input type="hidden" name="id" valued="${queryData.id}">
+              <input type="submit" value="delete">
+             </form>
+            `
           );
           response.writeHead(200);
           response.end(html);
           })
         });       
       }
+
     } else if(pathname === '/create'){
-      fs.readdir('./data', function(error, filelist){
+      //글생성하기
+      db.query(`select * from topic`, function(error,topics){
         var title = 'WEB - create';
-        var list = template.list(filelist);
-        var html = template.HTML(title, list, `
+        var list  = template.list(topics);
+        var html  = template.HTML(title, list, `
           <form action="/create_process" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
             <p>
@@ -99,20 +84,26 @@ var app = http.createServer(function(request,response){
         response.writeHead(200);
         response.end(html);
       });
+
     } else if(pathname === '/create_process'){
+      //글생성프로세스
       var body = '';
       request.on('data', function(data){
           body = body + data;
       });
       request.on('end', function(){
-          var post = qs.parse(body);
-          var title = post.title;
+          var post        = qs.parse(body);
+          var title       = post.title;
           var description = post.description;
+          /*
           fs.writeFile(`data/${title}`, description, 'utf8', function(err){
             response.writeHead(302, {Location: `/?id=${title}`});
             response.end();
           })
+          */
+        console.log(post)
       });
+
     } else if(pathname === '/update'){
       fs.readdir('./data', function(error, filelist){
         var filteredId = path.parse(queryData.id).base;
