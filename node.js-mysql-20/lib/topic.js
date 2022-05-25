@@ -1,8 +1,8 @@
-var db = require('./db');
-var template = require('./template.js');
-var url = require('url');
-var qs = require('querystring');
-var sanitizeHtml = require('sanitize-html');
+var db          = require('./db');
+var template      = require('./template.js');
+var url           = require('url');
+var qs            = require('querystring');
+var sanitizeHtml  = require('sanitize-html');
 
 exports.home = function(request, response){
     db.query(`SELECT * FROM topic`, function(error,topics){
